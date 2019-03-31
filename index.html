@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grid</title>
+</head>
+<body>
+  <div id="grid"></div>
+</body>
+
+<script type="text/javascript">
+  function drawGrid(rows, cols) {
+    var gridTable = document.createElement('table');
+
+    for(var i = 0; i < rows; i++) {
+      var row = gridTable.insertRow(i);
+      for(var j = 0; j < cols; j++) {
+        var cell = row.insertCell(j);
+        cell.style.color = 'black';
+        cell.style.backgroundColor = 'white';
+        cell.style.height = '25px';
+        cell.style.width = '25px';
+      }
+    }
+
+    gridDiv.appendChild(gridTable);
+  }
+
+  var rows = 10;
+  var cols = 10;
+  var gridDiv = document.getElementById('grid');
+
+  drawGrid(rows, cols);
+
+  var tbody = gridDiv.getElementsByTagName('table')[0].childNodes[0];
+
+  var iterator = function(row, col) {
+    var cell = tbody.childNodes[row].childNodes[col];
+    cell.style.color = 'white';
+    cell.style.backgroundColor = 'black';
+
+    setTimeout(function(row, col) {
+      if(col < cols - 1) {
+        iterator(row, ++col);
+      }
+      else {
+        if(row < rows -1) {
+          iterator(++row, 0);
+        }
+      }
+    }, 100, row, col);
+  };
+
+  iterator(0, 0);
+</script>
+</html>
