@@ -33,23 +33,24 @@
 
   var tbody = gridDiv.getElementsByTagName('table')[0].childNodes[0];
 
-  var iterator = function(row, col) {
+  var iterator = function(row, col, forward) {
     var cell = tbody.childNodes[row].childNodes[col];
     cell.style.color = 'white';
     cell.style.backgroundColor = 'black';
 
-    setTimeout(function(row, col) {
-      if(col < cols - 1) {
-        iterator(row, ++col);
+    // Moving forward means left to right.
+    setTimeout(function(row, col, forward) {
+      if((!forward && col > 0) || (forward && col < cols - 1)) {
+        iterator(row, forward ? ++col : --col, forward);
       }
       else {
-        if(row < rows -1) {
-          iterator(++row, 0);
+        if(row < rows - 1) {
+          iterator(++row, forward ? cols - 1 : 0, !forward);
         }
       }
-    }, 100, row, col);
+    }, 100, row, col, forward);
   };
 
-  iterator(0, 0);
+  iterator(0, 0, true);
 </script>
 </html>
