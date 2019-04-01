@@ -53,24 +53,18 @@
     clear();
   }
 
-  function runSnakeLeftToRight() {
+  function run(func) {
     var iterator = function(row, col, forward) {
       var tbody = gridDiv.getElementsByTagName('table')[0].childNodes[0];
       var cell = tbody.childNodes[row].childNodes[col];
       cell.style.color = 'white';
       cell.style.backgroundColor = 'black';
 
-      // Moving forward means left to right.
-      loop = setTimeout(function(row, col, forward) {
-        if((!forward && col > 0) || (forward && col < cols - 1)) {
-          iterator(row, forward ? ++col : --col, forward);
-        }
-        else {
-          if(row < rows - 1) {
-            iterator(++row, forward ? cols - 1 : 0, !forward);
-          }
-        }
-      }, 100, row, col, forward);
+      // NOTE: func.bind({row: row, ...}) can be used instead of appending
+      // arguments to setTimeout(). If this method is used, parameters can be
+      // omitted in the callback function and bound arguments can be accessed
+      // via this.
+      loop = setTimeout(func, 100, row, col, forward, iterator);
     };
 
     reset();
@@ -78,29 +72,36 @@
     iterator(0, 0, true);
   }
 
-  function runSnakeTopToBottom() {
-    var iterator = function(row, col, forward) {
-      var tbody = gridDiv.getElementsByTagName('table')[0].childNodes[0];
-      var cell = tbody.childNodes[row].childNodes[col];
-      cell.style.color = 'white';
-      cell.style.backgroundColor = 'black';
-
-      // Moving forward means top to bottom.
-      loop = setTimeout(function(row, col, forward) {
-        if((!forward && row > 0) || (forward && row < rows - 1)) {
-          iterator(forward ? ++row : --row, col, forward);
+  function runSnakeLeftToRight() {
+    // Moving forward means left to right.
+    var func = function(row, col, forward, iterator) {
+      if((!forward && col > 0) || (forward && col < cols - 1)) {
+        iterator(row, forward ? ++col : --col, forward);
+      }
+      else {
+        if(row < rows - 1) {
+          iterator(++row, forward ? cols - 1 : 0, !forward);
         }
-        else {
-          if(col < cols - 1) {
-            iterator(forward ? rows - 1 : 0, ++col, !forward);
-          }
-        }
-      }, 100, row, col, forward);
+      }
     };
 
-    reset();
-    drawGrid(rows, cols);
-    iterator(0, 0, true);
+    run(func);
+  }
+
+  function runSnakeTopToBottom() {
+    // Moving forward means top to bottom.
+    var func = function(row, col, forward, iterator) {
+      if((!forward && row > 0) || (forward && row < rows - 1)) {
+        iterator(forward ? ++row : --row, col, forward);
+      }
+      else {
+        if(col < cols - 1) {
+          iterator(forward ? rows - 1 : 0, ++col, !forward);
+        }
+      }
+    };
+
+    run(func);
   }
 </script>
 </html>
